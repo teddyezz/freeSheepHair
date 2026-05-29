@@ -1,0 +1,21 @@
+name: Keepalive
+
+on:
+  schedule:
+    - cron: '0 0 1 * *'
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Refresh timestamp
+        run: |
+          echo "Last active: $(date -u)" > keepalive.txt
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add keepalive.txt
+          git commit -m "keepalive: prevent 60-day schedule disable" || exit 0
+          git push
